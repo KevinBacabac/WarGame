@@ -18,7 +18,7 @@ class Country:
         self.player = player
 
 
-    def action(self, world_history):
+    def action(self, world_state):
         # Format action before appending
         country_status = {
             "Health": self.health,
@@ -26,7 +26,7 @@ class Country:
             "Nukes": self.nukes
         }
 
-        action = self.player.action(country_status, world_history)
+        action = self.player.action(country_status, world_state)
         return action
 
 
@@ -43,7 +43,7 @@ class Game:
 
     def __init__(self, countries: List[Country]):
         self.countries = countries
-        self.world_history = {
+        self.world_state = {
             "player_count": self._get_alive_count()
         }
         self.turn = 1
@@ -73,7 +73,7 @@ class Game:
             if not country.alive:
                 continue
 
-            action = country.action(self.world_history)
+            action = country.action(self.world_state)
 
             # Check if action is valid
             # If action is invalid, nuke own country
