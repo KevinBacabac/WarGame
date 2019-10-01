@@ -20,9 +20,11 @@ class Country:
 
     def action(self, world_history):
         # Format action before appending
-        country_status = {"Health": self.health,
-                          "Resources": self.resources,
-                          "Nukes": self.nukes}
+        country_status = {
+            "Health": self.health,
+            "Resources": self.resources,
+            "Nukes": self.nukes
+        }
 
         action = self.player.action(country_status, world_history)
         return action
@@ -41,7 +43,9 @@ class Game:
 
     def __init__(self, countries: List[Country]):
         self.countries = countries
-        self.world_history = {"player_count": self._get_alive_count()}
+        self.world_history = {
+            "player_count": self._get_alive_count()
+        }
         self.turn = 1
 
 

@@ -11,5 +11,7 @@ class Bot:
         weapon = randint(1, 3)
         target = randint(1, world_history["player_count"])
 
-        return {"Weapon": weapon,
-                "Target": target}
+        return {
+            "Weapon": weapon,
+            "Target": target
+        }
