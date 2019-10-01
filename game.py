@@ -43,6 +43,10 @@ class Game:
 
     def __init__(self, countries: List[Country]):
         self.countries = countries
+        # Initialize ids
+        for i, country in enumerate(self.countries):
+            country.id = i
+
         self.world_state = {
             "player_count": self._get_alive_count()
         }
