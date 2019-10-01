@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from typing import List
-from bots import SampleBot
+from bots import sampleBot
 
 class Country:
     DEFAULT_HEALTH = 100
@@ -16,11 +16,12 @@ class Country:
         self.player = player
 
 
-    def action(self):
+    def action(self, world_history):
         # Check if action is valid
         # If action is invalid, nuke own country
         # Format action before appending
-        self.player.action()
+        country_status = {}
+        return self.player.action(country_status, world_history)
 
 
     def take_damage(self, damage):
@@ -35,24 +36,31 @@ class Game:
 
     def __init__(self, countries: List[Country]):
         self.countries = countries
+        self.world_history = {"player_count": self._get_alive_count()}
         self.turn = 1
 
 
     def start(self):
-        while (sum(country.alive for country in self.countries) > 1
+        while (self._get_alive_count() > 1
                and self.turn <= self.MAX_TURNS):
+
             actions = self._get_actions()
             self._run_actions(actions)
+            self.turn += 1
 
+
+    def _get_alive_count(self):
+        return sum(country.alive for country in self.countries)
 
 
     def _get_actions(self):
         actions = []
+
         for country in self.countries:
             if not country.alive:
                 continue
 
-            action = country.action()
+            action = country.action(self.world_history)
             actions.append(action)
 
         return actions
@@ -63,7 +71,7 @@ class Game:
 def main():
     countries = []
     for _ in range(10):
-        countries.append(Country(new SampleBot.Bot))
+        countries.append(Country(sampleBot.Bot()))
 
     active_game = Game(countries)
     active_game.start()
