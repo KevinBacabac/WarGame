@@ -101,6 +101,7 @@ class Game:
     def _run_actions(self, actions):
         pass
 
+
 def main():
     countries = []
     for _ in range(10):
