@@ -59,11 +59,13 @@ class Game:
 
 
     def _get_alive_count(self):
+        """ Returns an integer """
         return sum(country.alive for country in self.countries)
 
 
     def _get_alive_countries(self):
-        return [i for i, c in enumerate(self.countries) if c.alive]
+        """ Returns indexes """
+        return [pos for pos, country in enumerate(self.countries) if country.alive]
 
 
     def _get_actions(self):
@@ -86,13 +88,14 @@ class Game:
 
 
     def _is_valid_action(self, action):
-        valid = ("Target" in action
-                 and assert "Weapon" in action
-                 and action["Weapon"] in weapons.Weapons
-                 and action["Target"] in self._get_alive_countries()
+        valid = (
+            "Target" in action,
+            "Weapon" in action,
+            action["Weapon"] in weapons.Weapons,
+            action["Target"] in self._get_alive_countries()
         )
 
-        return valid
+        return all(valid)
 
 
     def _nuke_country(i):
