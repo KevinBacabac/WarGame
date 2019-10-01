@@ -2,6 +2,8 @@
 
 from typing import List
 from bots import sampleBot
+from resources import weapons
+
 
 class Country:
     DEFAULT_HEALTH = 100
@@ -17,11 +19,14 @@ class Country:
 
 
     def action(self, world_history):
-        # Check if action is valid
-        # If action is invalid, nuke own country
         # Format action before appending
-        country_status = {}
-        return self.player.action(country_status, world_history)
+        country_status = {"Health": self.health,
+                          "Resources": self.resources,
+                          "Nukes": self.nukes}
+
+        action = self.player.action(country_status, world_history)
+        return action
+
 
 
     def take_damage(self, damage):
@@ -53,17 +58,45 @@ class Game:
         return sum(country.alive for country in self.countries)
 
 
+    def _get_alive_countries(self):
+        return [i for i, c in enumerate(self.countries) if c.alive]
+
+
     def _get_actions(self):
         actions = []
 
-        for country in self.countries:
+        for i, country in enumerate(self.countries):
             if not country.alive:
                 continue
 
             action = country.action(self.world_history)
+
+            # Check if action is valid
+            # If action is invalid, nuke own country
+            if not self._is_valid_action(action):
+                action = self._nuke_country(i)
+
             actions.append(action)
 
         return actions
+
+
+    def _is_valid_action(self, action):
+        valid = ("Target" in action
+                 and assert "Weapon" in action
+                 and action["Weapon"] in weapons.Weapons
+                 and action["Target"] in self._get_alive_countries()
+        )
+
+        return valid
+
+
+    def _nuke_country(i):
+        return {
+            "Weapon": weapons.Weapons.NUKE,
+            "Target": i
+        }
+
 
     def _run_actions(self, actions):
         pass
