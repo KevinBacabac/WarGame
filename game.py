@@ -3,17 +3,16 @@
 from typing import List
 
 
-
-
-
 class Country:
     DEFAULT_HEALTH = 100
     DEFAULT_RESOURCES = 100
+    NUKE_STOCKPILE = 1
 
     def __init__(self, player):
         self.alive = True
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
+        self.nukes = 1
         self.player = player
 
 
@@ -54,9 +53,6 @@ class Game:
                 continue
 
             action = country.action()
-
-
-
             actions.append(action)
 
         return actions
