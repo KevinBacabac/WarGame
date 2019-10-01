@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from typing import List
-
+from bots import SampleBot
 
 class Country:
     DEFAULT_HEALTH = 100
@@ -12,7 +12,7 @@ class Country:
         self.alive = True
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
-        self.nukes = 1
+        self.nukes = self.NUKE_STOCKPILE
         self.player = player
 
 
@@ -20,7 +20,7 @@ class Country:
         # Check if action is valid
         # If action is invalid, nuke own country
         # Format action before appending
-        pass
+        self.player.action()
 
 
     def take_damage(self, damage):
@@ -61,7 +61,12 @@ class Game:
         pass
 
 def main():
-    pass
+    countries = []
+    for _ in range(10):
+        countries.append(Country(new SampleBot.Bot))
+
+    active_game = Game(countries)
+    active_game.start()
 
 
 if __name__ == "__main__":
