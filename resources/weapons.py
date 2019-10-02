@@ -6,6 +6,10 @@ class Weapons(Enum):
     MISSILE = 2
     NUKE = 3
 
+    @classmethod
+    def has(cls, value):
+        return value in cls._value2member_map_ 
+
 
 class Laser:
     COST = 10
