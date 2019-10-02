@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from typing import List
-from bots import sampleBot
+from bots import sample_bot
 from resources import weapons
 
 
@@ -20,15 +20,21 @@ class Country:
 
     def action(self, world_state):
         # Format action before appending
+        country_status = self.serialize()
+
+        action = self.player.action(country_status, world_state)
+        return action
+
+
+    def serialize(self):
         country_status = {
+            "Alive": self.alive,
             "Health": self.health,
             "Resources": self.resources,
             "Nukes": self.nukes
         }
 
-        action = self.player.action(country_status, world_state)
-        return action
-
+        return country_status
 
 
     def take_damage(self, damage):
@@ -47,9 +53,6 @@ class Game:
         for i, country in enumerate(self.countries):
             country.id = i
 
-        self.world_state = {
-            "player_count": self._get_alive_count()
-        }
         self.turn = 1
 
 
@@ -72,19 +75,29 @@ class Game:
         return [pos for pos, country in enumerate(self.countries) if country.alive]
 
 
+    def _get_world_state(self):
+        return {
+            "countries": self._serialize_countries(),
+            "player_count": self._get_alive_count()
+        }
+
+
     def _get_actions(self):
         actions = []
+        world_state = self._get_world_state()
 
         for i, country in enumerate(self.countries):
             if not country.alive:
                 continue
 
-            action = country.action(self.world_state)
+            action = country.action(world_state)
 
             # Check if action is valid
             # If action is invalid, nuke own country
             if not self._is_valid_action(action):
-                action = self._nuke_country(i)
+                action = {
+                    "Weapon": "Wait"
+                }
 
             actions.append(action)
 
@@ -92,31 +105,44 @@ class Game:
 
 
     def _is_valid_action(self, action):
-        valid = (
+        return all(
             "Target" in action,
             "Weapon" in action,
             action["Weapon"] in weapons.Weapons,
             action["Target"] in self._get_alive_countries()
         )
 
-        return all(valid)
 
+    def _serialize_countries(self):
+        countries = []
+        for country in self.countries:
+            countries.append(country.serialize())
 
-    def _nuke_country(i):
-        return {
-            "Weapon": weapons.Weapons.NUKE,
-            "Target": i
-        }
-
+        return countries
 
     def _run_actions(self, actions):
+        for action in actions:
+            if action["Weapon"] != "Wait":
+                continue
+
+            if action["Weapon"] == 1:  # LASER
+                pass
+
+            elif action["Weapon"] == 2:  # Missile
+                pass
+
+            elif action["Weapon"] == 3:  # Nuke
+                pass
+
+    def _nuke_country(self, target):
         pass
+
 
 
 def main():
     countries = []
     for _ in range(10):
-        countries.append(Country(sampleBot.Bot()))
+        countries.append(Country(sample_bot.Bot()))
 
     active_game = Game(countries)
     active_game.start()
