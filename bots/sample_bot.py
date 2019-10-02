@@ -12,6 +12,6 @@ class Bot:
         target = randint(1, world_state["player_count"])
 
         return {
-            "Weapon": weapon,
+            "Action": weapon,
             "Target": target
         }
