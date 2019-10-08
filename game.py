@@ -188,27 +188,42 @@ class Game:
                 self.countries[player].alive = False
                 self.events.append({
                     "Action": "Death",
-                    "ID": self.countries[player].name
+                    "ID": player
                 })
 
     def _print_events(self):
+        def name(id):
+            return self.countries[id].name
+
         for event in self.events:
+            source = name(event["ID"])
+
+            if "Target" in event:
+                target = name(event["Target"])
+            else:
+                target = None
+
             if event["Action"] == 0:
-                print(event["ID"], "decided to wait.")
+                if target:
+                    print(source, "decided to wait and stared at", target)
+                else:
+                    print(source, "decided to wait.")
 
             elif event["Action"] == 1:  # LASER
-                print(event["ID"], "fired a laser at", event["Target"])
+                print(source, "fired a laser at", target)
 
             elif event["Action"] == 2:  # Missile
-                print(event["ID"], "fired a missile at", event["Target"])
+                print(source, "fired a missile at", target)
 
             elif event["Action"] == 3:
-                print(event["ID"], "fired a nuke at", event["Target"])
+                print(source, "fired a nuke at", target)
                 if not event["Success"]:
                     print("But they ran out of nukes.")
 
             elif event["Action"] == "Death":
-                print(event["ID"], "is dead!")
+                print(source, "is dead!")
+
+
 
         time.sleep(1)
 
