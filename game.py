@@ -39,7 +39,6 @@ class Country:
         country_status = self.serialize()
 
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
-
         action["ID"] = self.id
         return action
 
@@ -96,7 +95,6 @@ class Game:
 
         else:
             print("There were no survivors.")
-
 
     def _get_alive_count(self):
         """ Returns an integer """
@@ -217,13 +215,12 @@ class Game:
 
             elif event["Action"] == 3:
                 print(source, "fired a nuke at", target)
+
                 if not event["Success"]:
                     print("But they ran out of nukes.")
 
             elif event["Action"] == "Death":
                 print(source, "is dead!")
-
-
 
         time.sleep(1)
 
