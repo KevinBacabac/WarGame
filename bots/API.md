@@ -25,3 +25,10 @@ A dictionary containing the following keys
     "Action": [An element of the Weapon enum]
     "Target": [A country ID]
 }
+
+Event
+An Action dictionary with an additional key,
+{
+    "Source": [The ID of the country that performed the action]
+    ...
+}
