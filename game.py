@@ -40,6 +40,16 @@ class Country:
 
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
         action["Source"] = self.id
+
+
+        if action["Action"] == 3:  # Nuke
+            action["Success"] = self.nukes > 0
+
+            if action["Success"]:
+                self.nukes -= 1
+        else:
+            action["Success"] = True
+
         return action
 
 
@@ -164,19 +174,20 @@ class Game:
 
             elif action["Action"] == 1:  # LASER
                 self.events.append(action)
-                self.countries[action["Target"]].take_damage(20)
+
+                if action["Success"]:
+                    self.countries[action["Target"]].take_damage(20)
 
             elif action["Action"] == 2:  # Missile
                 self.events.append(action)
-                self.countries[action["Target"]].take_damage(20)
+
+                if action["Success"]:
+                    self.countries[action["Target"]].take_damage(20)
 
             elif action["Action"] == 3:  # Nuke
-                action["Success"] = bool(self.countries[action["Source"]].nukes)
                 self.events.append(action)
 
-                if self.countries[action["Source"]].nukes:
-                    self.countries[action["Source"]].nukes -= 1
-
+                if action["Success"]:
                     self.countries[action["Target"]].take_damage(100)
 
 
