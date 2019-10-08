@@ -1,28 +1,44 @@
 #!/usr/bin/python3
 
+from copy import deepcopy
 from typing import List
-from bots import sample_bot
 from resources import weapons
+from os.path import abspath, dirname
+import importlib
+import os
 import time
+
+
+# Dynamically import bots in bots directory to BOTS dictionary
+BOTS = {}  # A dictionary of bot names to Bot classes
+bots = os.path.join(abspath(dirname(__file__)), "bots")
+for file in os.listdir(bots):
+    if not file.endswith(".py"):
+        continue
+
+    name = file.replace(".py", "")
+    module = "." + name
+    BOTS[name] = importlib.import_module(module, "bots").Bot
+
 
 class Country:
     DEFAULT_HEALTH = 100
     DEFAULT_RESOURCES = 100
     NUKE_STOCKPILE = 1
 
-    def __init__(self, player):
+    def __init__(self, player_class):
         self.alive = True
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
         self.nukes = self.NUKE_STOCKPILE
-        self.player = player
+        self.player = player_class()
 
 
     def action(self, world_state):
         # Format action before appending
         country_status = self.serialize()
 
-        action = self.player.action(country_status, world_state)
+        action = self.player.action(deepcopy(country_status), deepcopy(world_state))
         action["ID"] = self.id
         return action
 
@@ -75,11 +91,10 @@ class Game:
 
         if self._get_alive_count() == 1:
             alive = self._get_alive_countries()[0]
-            print(alive, "is the last one standing.")
+            print(self.countries[alive].name, "is the last one standing.")
 
         else:
             print("There were no survivors.")
-
 
     def _get_alive_count(self):
         """ Returns an integer """
@@ -175,23 +190,37 @@ class Game:
                 })
 
     def _print_events(self):
+        def name(id):
+            return self.countries[id].name
+
         for event in self.events:
+            source = name(event["ID"])
+
+            if "Target" in event:
+                target = name(event["Target"])
+            else:
+                target = None
+
             if event["Action"] == 0:
-                print(event["ID"], "decided to wait.")
+                if target:
+                    print(source, "decided to wait and stared at", target)
+                else:
+                    print(source, "decided to wait.")
 
             elif event["Action"] == 1:  # LASER
-                print(event["ID"], "fired a laser at", event["Target"])
+                print(source, "fired a laser at", target)
 
             elif event["Action"] == 2:  # Missile
-                print(event["ID"], "fired a missile at", event["Target"])
+                print(source, "fired a missile at", target)
 
             elif event["Action"] == 3:
-                print(event["ID"], "fired a nuke at", event["Target"])
+                print(source, "fired a nuke at", target)
+
                 if not event["Success"]:
                     print("But they ran out of nukes.")
 
             elif event["Action"] == "Death":
-                print(event["ID"], "is dead!")
+                print(source, "is dead!")
 
         time.sleep(1)
 
@@ -199,8 +228,11 @@ class Game:
 
 def main():
     countries = []
-    for _ in range(6):
-        countries.append(Country(sample_bot.Bot()))
+    for name in BOTS:
+        bot_class = BOTS[name]
+        country = Country(bot_class)
+        country.name = name
+        countries.append(country)
 
     active_game = Game(countries)
     active_game.start()
