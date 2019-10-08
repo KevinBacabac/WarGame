@@ -1,28 +1,45 @@
 #!/usr/bin/python3
 
+from copy import deepcopy
 from typing import List
-from bots import sample_bot
 from resources import weapons
+from os.path import abspath, dirname
+import importlib
+import os
 import time
+
+
+# Dynamically import bots in bots directory to BOTS dictionary
+BOTS = {}  # A dictionary of bot names to Bot classes
+bots = os.path.join(abspath(dirname(__file__)), "bots")
+for file in os.listdir(bots):
+    if not file.endswith(".py"):
+        continue
+
+    name = file.replace(".py", "")
+    module = "." + name
+    BOTS[name] = importlib.import_module(module, "bots").Bot
+
 
 class Country:
     DEFAULT_HEALTH = 100
     DEFAULT_RESOURCES = 100
     NUKE_STOCKPILE = 1
 
-    def __init__(self, player):
+    def __init__(self, player_class):
         self.alive = True
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
         self.nukes = self.NUKE_STOCKPILE
-        self.player = player
+        self.player = player_class()
 
 
     def action(self, world_state):
         # Format action before appending
         country_status = self.serialize()
 
-        action = self.player.action(country_status, world_state)
+        action = self.player.action(deepcopy(country_status), deepcopy(world_state))
+
         action["ID"] = self.id
         return action
 
@@ -171,7 +188,7 @@ class Game:
                 self.countries[player].alive = False
                 self.events.append({
                     "Action": "Death",
-                    "ID": player
+                    "ID": self.countries[player].name
                 })
 
     def _print_events(self):
@@ -199,8 +216,11 @@ class Game:
 
 def main():
     countries = []
-    for _ in range(6):
-        countries.append(Country(sample_bot.Bot()))
+    for name in BOTS:
+        bot_class = BOTS[name]
+        country = Country(bot_class)
+        country.name = name
+        countries.append(country)
 
     active_game = Game(countries)
     active_game.start()
