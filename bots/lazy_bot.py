@@ -22,7 +22,7 @@ class Bot:
 
         # Select a weapon
         self.counter -= randint(1, 3)
-        if self.counter:
+        if self.counter > 0:
             weapon = 0
         else:
             self.counter = self.interval
