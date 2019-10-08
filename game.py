@@ -39,7 +39,7 @@ class Country:
         country_status = self.serialize()
 
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
-        action["ID"] = self.id
+        action["Source"] = self.id
         return action
 
 
@@ -171,11 +171,11 @@ class Game:
                 self.countries[action["Target"]].take_damage(20)
 
             elif action["Action"] == 3:  # Nuke
-                action["Success"] = bool(self.countries[action["ID"]].nukes)
+                action["Success"] = bool(self.countries[action["Source"]].nukes)
                 self.events.append(action)
 
-                if self.countries[action["ID"]].nukes:
-                    self.countries[action["ID"]].nukes -= 1
+                if self.countries[action["Source"]].nukes:
+                    self.countries[action["Source"]].nukes -= 1
 
                     self.countries[action["Target"]].take_damage(100)
 
@@ -186,7 +186,7 @@ class Game:
                 self.countries[player].alive = False
                 self.events.append({
                     "Action": "Death",
-                    "ID": player
+                    "Source": player
                 })
 
     def _print_events(self):
@@ -194,7 +194,7 @@ class Game:
             return self.countries[id].name
 
         for event in self.events:
-            source = name(event["ID"])
+            source = name(event["Source"])
 
             if "Target" in event:
                 target = name(event["Target"])
