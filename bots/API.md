@@ -32,3 +32,10 @@ An Action dictionary with an additional key,
     "Source": [The ID of the country that performed the action]
     ...
 }
+
+Attack Event
+An Event dictionary with an additional key,
+{
+    "Success": [Did they fire their weapon successfully]
+    ...
+}
