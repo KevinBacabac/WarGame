@@ -27,11 +27,7 @@ class Game:
         while (self._get_alive_count() > 1
                and self.turn <= self.MAX_TURNS):
 
-            print("Round", self.turn)
-            actions = self._get_actions()
-            self._run_actions(actions)
-            self._print_events()
-            self.turn += 1
+            self.do_turn()
 
         if self._get_alive_count() == 1:
             alive = self._get_alive_countries()[0]
@@ -42,6 +38,13 @@ class Game:
 
         print("Hit enter to exit.")
         input()
+
+    def do_turn(self):
+        print("Round", self.turn)
+        actions = self._get_actions()
+        self._run_actions(actions)
+        self.turn += 1
+        self._print_events()
 
     def _get_alive_count(self):
         """ Returns an integer """
