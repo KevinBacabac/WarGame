@@ -22,7 +22,7 @@ class Bot:
             "Target": target
         }
 
-    def pick_target(self, world_state):
+    def pick_target(self, world_state: dict):
         """
         Return a country ID
         """

@@ -34,5 +34,5 @@ class Bot:
             "Target": target
         }
 
-    def has_nukes(self, country_status):
+    def has_nukes(self, country_status: dict):
         return country_status["Nukes"] > 0

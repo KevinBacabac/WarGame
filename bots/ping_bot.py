@@ -1,4 +1,6 @@
 from random import choice
+from typing import List
+
 
 from resources.weapons import Weapons
 
@@ -33,7 +35,7 @@ class Bot:
             return {}
 
 
-    def review_events(self, events, self_id):
+    def review_events(self, events: List[dict], self_id: int):
         for event in events:
             # Search for only events that fire at this bot
             if event["Weapon"] in Weapons and event["Target"] == self_id:
