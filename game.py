@@ -81,7 +81,7 @@ class Game:
         return actions
 
 
-    def _is_valid_action(self, action):
+    def _is_valid_action(self, action: dict):
         try:
             if "Weapon" not in action:
                 return True
@@ -102,7 +102,7 @@ class Game:
 
         return countries
 
-    def _run_actions(self, actions):
+    def _run_actions(self, actions: List[dict]):
         self.events = []
         alive = self._get_alive_countries()
 

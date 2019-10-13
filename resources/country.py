@@ -19,7 +19,7 @@ class Country:
         self.player = player_class()
 
 
-    def get_action(self, world_state):
+    def get_action(self, world_state: dict):
         """ Get the action from the player bot
         """
 
@@ -56,7 +56,7 @@ class Country:
         return country_status
 
 
-    def take_damage(self, damage):
+    def take_damage(self, damage: int):
         self.health -= damage
 
         if self.health <= 0:
