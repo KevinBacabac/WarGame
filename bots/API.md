@@ -20,9 +20,9 @@ A dictionary containing the following keys
 
 
 Action
-A dictionary containing the following keys
+A dictionary containing the following keys. If there is no Weapon key then a bot will do nothing.
 {
-    "Action": [An element of the Weapon enum]
+    "Weapon": [An element of the Weapon enum]
     "Target": [A country ID]
 }
 

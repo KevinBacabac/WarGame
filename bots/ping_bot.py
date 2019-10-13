@@ -25,7 +25,7 @@ class Bot:
             action, target = self.last_weapon, self.last_enemy
 
             return {
-                "Action": action,
+                "Weapon": action,
                 "Target": target
             }
 
@@ -36,7 +36,7 @@ class Bot:
     def review_events(self, events, self_id):
         for event in events:
             # Search for only events that fire at this bot
-            if event["Action"] in Weapons and event["Target"] == self_id:
+            if event["Weapon"] in Weapons and event["Target"] == self_id:
                 self.last_enemy = event["Source"]
-                self.last_weapon = event["Action"]
+                self.last_weapon = event["Weapon"]
                 break

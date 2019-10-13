@@ -18,7 +18,7 @@ class Bot:
         weapon = choice(list(Weapons))
 
         return {
-            "Action": weapon,
+            "Weapon": weapon,
             "Target": target
         }
 

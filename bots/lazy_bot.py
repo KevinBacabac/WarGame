@@ -30,7 +30,7 @@ class Bot:
         target = choice(target_choices)
 
         return {
-            "Action": weapon,
+            "Weapon": weapon,
             "Target": target
         }
 

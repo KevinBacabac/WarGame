@@ -29,8 +29,8 @@ class Country:
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
         action["Source"] = self.id
 
-        if "Action" in action:
-            if action["Action"] == weapons.Weapons.NUKE:  # Nuke
+        if "Weapon" in action:
+            if action["Weapon"] == weapons.Weapons.NUKE:  # Nuke
                 action["Success"] = self.nukes > 0
 
                 if action["Success"]:
@@ -134,11 +134,11 @@ class Game:
 
     def _is_valid_action(self, action):
         try:
-            if "Action" not in action:
+            if "Weapon" not in action:
                 return True
 
             return all((
-                action["Action"] in weapons.Weapons,
+                action["Weapon"] in weapons.Weapons,
                 action["Target"] in self._get_alive_countries()
             ))
         except KeyError as e:
@@ -158,11 +158,11 @@ class Game:
         alive = self._get_alive_countries()
 
         for action in actions:
-            if "Action" in action and action["Action"] in weapons.Weapons:
+            if "Weapon" in action and action["Weapon"] in weapons.Weapons:
                 self.events.append(action)
 
                 if action["Success"]:
-                    damage = action["Action"].value.DAMAGE
+                    damage = action["Weapon"].value.DAMAGE
                     self.countries[action["Target"]].take_damage(damage)
 
 
@@ -171,7 +171,7 @@ class Game:
             if self.countries[player].health == 0:
                 self.countries[player].alive = False
                 self.events.append({
-                    "Action": "Death",
+                    "Weapon": "Death",
                     "Source": player
                 })
 
@@ -187,25 +187,25 @@ class Game:
             else:
                 target = None
 
-            if "Action" not in event:
+            if "Weapon" not in event:
                 if target:
                     print(source, "decided to wait and stared at", target)
                 else:
                     print(source, "decided to wait.")
 
-            elif event["Action"] == weapons.Weapons.LASER:  # LASER
+            elif event["Weapon"] == weapons.Weapons.LASER:  # LASER
                 print(source, "fired a laser at", target)
 
-            elif event["Action"] == weapons.Weapons.MISSILE:  # Missile
+            elif event["Weapon"] == weapons.Weapons.MISSILE:  # Missile
                 print(source, "fired a missile at", target)
 
-            elif event["Action"] == weapons.Weapons.NUKE:
+            elif event["Weapon"] == weapons.Weapons.NUKE:
                 print(source, "fired a nuke at", target)
 
                 if not event["Success"]:
                     print("But they ran out of nukes.")
 
-            elif event["Action"] == "Death":
+            elif event["Weapon"] == "Death":
                 print(source, "is dead!")
 
         time.sleep(1)

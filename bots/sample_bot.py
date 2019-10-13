@@ -16,6 +16,6 @@ class Bot:
         target = choice(world_state["alive_players"])
 
         return {
-            "Action": weapon,
+            "Weapon": weapon,
             "Target": target
         }
