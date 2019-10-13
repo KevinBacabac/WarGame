@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import Enum, unique
 
 
+@unique
 class Weapons(Enum):
     WAIT = 0
     LASER = 1
