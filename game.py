@@ -19,18 +19,27 @@ class Country:
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
         self.nukes = self.NUKE_STOCKPILE
+
+        # Each person's bot is stored here
+        # We must instantiate each class
         self.player = player_class()
 
 
-    def action(self, world_state):
-        # Format action before appending
-        country_status = self.serialize()
+    def get_action(self, world_state):
+        """ Get the action from the player bot
+        """
 
+        country_status = self.serialize()
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
         action["Source"] = self.id
+        action = self._do_action(action)
 
+        return action
+
+
+    def _do_action(self, action):
         if "Weapon" in action:
-            if action["Weapon"] == weapons.Weapons.NUKE:  # Nuke
+            if action["Weapon"] == weapons.Weapons.NUKE:
                 action["Success"] = self.nukes > 0
 
                 if action["Success"]:
@@ -120,7 +129,7 @@ class Game:
             if not country.alive:
                 continue
 
-            action = country.action(world_state)
+            action = country.get_action(world_state)
 
             # Check if action is valid
             # If action is invalid, nuke own country
