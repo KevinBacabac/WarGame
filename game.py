@@ -9,18 +9,6 @@ import os
 import time
 
 
-# Dynamically import bots in bots directory to BOTS dictionary
-BOTS = {}  # A dictionary of bot names to Bot classes
-bots = os.path.join(abspath(dirname(__file__)), "bots")
-for file in os.listdir(bots):
-    if not file.endswith(".py"):
-        continue
-
-    name = file.replace(".py", "")
-    module = "." + name
-    BOTS[name] = importlib.import_module(module, "bots").Bot
-
-
 class Country:
     DEFAULT_HEALTH = 100
     DEFAULT_RESOURCES = 100
@@ -239,8 +227,24 @@ class Game:
         time.sleep(1)
 
 
+def get_bots():
+    # Dynamically import bots in bots directory to BOTS dictionary
+    BOTS = {}  # A dictionary of bot names to Bot classes
+    bots = os.path.join(abspath(dirname(__file__)), "bots")
+    for file in os.listdir(bots):
+        if not file.endswith(".py"):
+            continue
 
-def main():
+        name = file.replace(".py", "")
+        module = "." + name
+        BOTS[name] = importlib.import_module(module, "bots").Bot
+
+    return BOTS
+
+
+def get_countries():
+    BOTS = get_bots()
+
     countries = []
     for name in BOTS:
         bot_class = BOTS[name]
@@ -248,6 +252,11 @@ def main():
         country.name = name
         countries.append(country)
 
+    return countries
+
+
+def main():
+    countries = get_countries()
     active_game = Game(countries)
     active_game.start()
 
