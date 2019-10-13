@@ -10,10 +10,10 @@ class Bot:
 
 
     def action(self, country_status: dict, world_state: dict):
-        weapon_choices = [1, 2, 3]
+        weapon_choices = list(Weapons)
         if not self.has_nukes(country_status):
             # If you don't have nukes don't try firing them
-            weapon_choices.remove(3)
+            weapon_choices.remove(Weapons.NUKE)
 
         # Don't shoot yourself please...
         target_choices = world_state["alive_players"]

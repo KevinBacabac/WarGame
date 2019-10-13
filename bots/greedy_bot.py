@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import choice
 
 from resources.weapons import Weapons
 
@@ -15,7 +15,7 @@ class Bot:
         target = self.pick_target(world_state)
 
         # Select a weapon
-        weapon = choice((1, 2, 3))
+        weapon = choice(list(Weapons))
 
         return {
             "Action": weapon,

@@ -13,21 +13,21 @@ class Bot:
         self.counter = self.interval
 
     def action(self, country_status: dict, world_state: dict):
+        # Select a weapon
+        self.counter -= randint(1, 3)
+        if self.counter > 0:
+            return {}
+
+
+        self.counter = self.interval
+        weapon = choice(list(Weapons))
+
         # Don't shoot yourself please...
         target_choices = world_state["alive_players"]
         target_choices.remove(country_status["ID"])
 
         # Fire at...
         target = choice(target_choices)
-
-        # Select a weapon
-        self.counter -= randint(1, 3)
-        if self.counter > 0:
-            weapon = 0
-        else:
-            self.counter = self.interval
-            weapon = choice((1, 2, 3))
-
 
         return {
             "Action": weapon,

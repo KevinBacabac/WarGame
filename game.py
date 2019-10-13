@@ -29,14 +29,14 @@ class Country:
         action = self.player.action(deepcopy(country_status), deepcopy(world_state))
         action["Source"] = self.id
 
+        if "Action" in action:
+            if action["Action"] == weapons.Weapons.NUKE:  # Nuke
+                action["Success"] = self.nukes > 0
 
-        if action["Action"] == 3:  # Nuke
-            action["Success"] = self.nukes > 0
-
-            if action["Success"]:
-                self.nukes -= 1
-        else:
-            action["Success"] = True
+                if action["Success"]:
+                    self.nukes -= 1
+            else:
+                action["Success"] = True
 
         return action
 
@@ -125,9 +125,7 @@ class Game:
             # Check if action is valid
             # If action is invalid, nuke own country
             if not self._is_valid_action(action):
-                action = {
-                    "Action": "Wait"
-                }
+                action = {}
 
             actions.append(action)
 
@@ -136,12 +134,15 @@ class Game:
 
     def _is_valid_action(self, action):
         try:
+            if "Action" not in action:
+                return True
+
             return all((
-                weapons.Weapons.has(action["Action"]),
+                action["Action"] in weapons.Weapons,
                 action["Target"] in self._get_alive_countries()
             ))
-        except KeyError:
-            print("KeyError", action)
+        except KeyError as e:
+            print("KeyError", e)
             return False
 
 
@@ -157,26 +158,12 @@ class Game:
         alive = self._get_alive_countries()
 
         for action in actions:
-            if action["Action"] == 0:
-                self.events.append(action)
-
-            elif action["Action"] == 1:  # LASER
+            if "Action" in action and action["Action"] in weapons.Weapons:
                 self.events.append(action)
 
                 if action["Success"]:
-                    self.countries[action["Target"]].take_damage(20)
-
-            elif action["Action"] == 2:  # Missile
-                self.events.append(action)
-
-                if action["Success"]:
-                    self.countries[action["Target"]].take_damage(20)
-
-            elif action["Action"] == 3:  # Nuke
-                self.events.append(action)
-
-                if action["Success"]:
-                    self.countries[action["Target"]].take_damage(100)
+                    damage = action["Action"].value.DAMAGE
+                    self.countries[action["Target"]].take_damage(damage)
 
 
         # Kill players who died this turn
@@ -200,19 +187,19 @@ class Game:
             else:
                 target = None
 
-            if event["Action"] == 0:
+            if "Action" not in event:
                 if target:
                     print(source, "decided to wait and stared at", target)
                 else:
                     print(source, "decided to wait.")
 
-            elif event["Action"] == 1:  # LASER
+            elif event["Action"] == weapons.Weapons.LASER:  # LASER
                 print(source, "fired a laser at", target)
 
-            elif event["Action"] == 2:  # Missile
+            elif event["Action"] == weapons.Weapons.MISSILE:  # Missile
                 print(source, "fired a missile at", target)
 
-            elif event["Action"] == 3:
+            elif event["Action"] == weapons.Weapons.NUKE:
                 print(source, "fired a nuke at", target)
 
                 if not event["Success"]:

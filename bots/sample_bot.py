@@ -1,4 +1,4 @@
-from random import choice, randint
+from random import choice
 
 from resources.weapons import Weapons
 
@@ -11,7 +11,7 @@ class Bot:
 
 
     def action(self, country_status: dict, world_state: dict):
-        weapon = randint(1, 3)
+        weapon = choice(list(Weapons))
 
         target = choice(world_state["alive_players"])
 
