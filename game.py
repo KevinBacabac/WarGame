@@ -59,9 +59,6 @@ class Country:
         if self.health <= 0:
             self.health = 0
 
-        else:
-            pass  # print(self.id, "HP is", self.health)
-
 
 class Game:
     MAX_TURNS = 30
