@@ -1,10 +1,8 @@
 #!/usr/bin/python3
 
-from typing import List
 import time
 
 from resources import weapons
-from resources.country import Country
 from resources.game_logic import GameLogic
 
 
