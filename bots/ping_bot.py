@@ -38,7 +38,8 @@ class Bot:
     def review_events(self, events: List[dict], self_id: int):
         for event in events:
             # Search for only events that fire at this bot
-            if event["Weapon"] in Weapons and event["Target"] == self_id:
+            if ("Weapon" in event
+                and event["Weapon"] in Weapons and event["Target"] == self_id):
                 self.last_enemy = event["Source"]
                 self.last_weapon = event["Weapon"]
                 break

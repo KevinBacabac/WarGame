@@ -104,7 +104,7 @@ class GameLogic:
             if self.countries[player].health == 0:
                 self.countries[player].alive = False
                 self.events.append({
-                    "Weapon": "Death",
+                    "Death": None,
                     "Source": player
                 })
 

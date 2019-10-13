@@ -58,7 +58,7 @@ class TextGame:
                 if not event["Success"]:
                     print("But they ran out of nukes.")
 
-            elif event["Weapon"] == "Death":
+            elif "Death" in event:
                 print(source, "is dead!")
 
         time.sleep(1)
