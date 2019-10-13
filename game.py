@@ -106,6 +106,9 @@ class Game:
         else:
             print("There were no survivors.")
 
+        print("Hit enter to exit.")
+        input()
+
     def _get_alive_count(self):
         """ Returns an integer """
         return sum(country.alive for country in self.countries)
