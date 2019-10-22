@@ -13,23 +13,29 @@ class Country:
         self.health = self.DEFAULT_HEALTH
         self.resources = self.DEFAULT_RESOURCES
         self.nukes = self.NUKE_STOCKPILE
+        self.killer = None  # Player ID
 
         # Each person's bot is stored here
         # We must instantiate each class
         self.player = player_class()
-
 
     def get_action(self, world_state: dict):
         """ Get the action from the player bot
         """
 
         country_status = self.serialize()
-        action = self.player.action(deepcopy(country_status), deepcopy(world_state))
+
+        try:
+            action = self.player.action(deepcopy(country_status), deepcopy(world_state))
+        except Exception as e:
+            print("Caught exception for", self.name)
+            print(e)
+            action = {}
+
         action["Source"] = self.id
         action = self._do_action(action)
 
         return action
-
 
     def _do_action(self, action):
         if "Weapon" in action:
@@ -43,7 +49,6 @@ class Country:
 
         return action
 
-
     def serialize(self):
         country_status = {
             "Alive": self.alive,
@@ -55,9 +60,13 @@ class Country:
 
         return country_status
 
+    def take_damage(self, action: dict):
+        damage = action["Event"]["Weapon"].value.DAMAGE
+        source = action["Event"]["Source"]
 
-    def take_damage(self, damage: int):
-        self.health -= damage
+        if self.health > 0:
+            self.health -= damage
 
-        if self.health <= 0:
-            self.health = 0
+            if self.health <= 0:
+                self.health = 0
+                self.killer = source

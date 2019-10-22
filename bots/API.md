@@ -13,8 +13,9 @@ A dictionary containing the following keys
 world_state
 A dictionary containing the following keys
 {
+    "active_weapons": [An array of Active Weapon dictionaries]
     "countries": [An array of country_status dictionaries]
-    "events": [An array of dictionaries]
+    "events": [An array of Event dictionaries]
     "alive_players": [An array of integers corresponding to country IDs]
 }
 
@@ -33,9 +34,22 @@ An Action dictionary with an additional key,
     ...
 }
 
+Death Event
+An Event dictionary with an additional key,
+{
+    "Death": [The ID of a country]
+    ...
+}
+
 Attack Event
 An Event dictionary with an additional key,
 {
     "Success": [Did they fire their weapon successfully]
     ...
+}
+
+Active Weapon
+{
+    "Delay": [An integer representing the delay until the weapon hits its target]
+    "Event": [An attack event]
 }

@@ -1,5 +1,7 @@
-from typing import List
+from math import ceil, pi, sin
 from os.path import abspath, dirname
+from typing import List
+
 import importlib
 import os
 
@@ -13,6 +15,7 @@ class GameLogic:
     def __init__(self):
         self.countries = get_countries()
         self.events = []
+        self.active_weapons = []
 
         # Initialize ids
         for i, country in enumerate(self.countries):
@@ -20,30 +23,30 @@ class GameLogic:
 
         self.turn = 1
 
-
     def do_turn(self):
+        print()
         print("Round", self.turn)
         actions = self._get_actions()
-        self._run_actions(actions)
+        self.events = []
+        self._process_actions(actions)
+        self._run_active()
         self.turn += 1
 
     def get_alive_count(self):
         """ Returns an integer """
         return sum(country.alive for country in self.countries)
 
-
     def get_alive_countries(self):
         """ Returns indexes """
         return [pos for pos, country in enumerate(self.countries) if country.alive]
 
-
     def _get_world_state(self):
         return {
+            "active_weapons": self.active_weapons,
             "countries": self._serialize_countries(),
             "events": self.events,
             "alive_players": self.get_alive_countries()
         }
-
 
     def _get_actions(self):
         actions = []
@@ -56,14 +59,10 @@ class GameLogic:
             action = country.get_action(world_state)
 
             # Check if action is valid
-            # If action is invalid, nuke own country
-            if not self._is_valid_action(action):
-                action = {}
-
-            actions.append(action)
+            if self._is_valid_action(action):
+                actions.append(action)
 
         return actions
-
 
     def _is_valid_action(self, action: dict):
         try:
@@ -78,7 +77,6 @@ class GameLogic:
             print("KeyError", e)
             return False
 
-
     def _serialize_countries(self):
         countries = []
         for country in self.countries:
@@ -86,27 +84,90 @@ class GameLogic:
 
         return countries
 
-    def _run_actions(self, actions: List[dict]):
-        self.events = []
+    def _run_active(self):
         alive = self.get_alive_countries()
 
-        for action in actions:
-            if "Weapon" in action and action["Weapon"] in weapons.Weapons:
-                self.events.append(action)
+        for action in self.active_weapons[:]:
+            if action["Delay"] <= 0:
+                if action["Event"]["Success"]:
+                    c = action["Event"]["Target"]
+                    self.countries[c].take_damage(action)
 
-                if action["Success"]:
-                    damage = action["Weapon"].value.DAMAGE
-                    self.countries[action["Target"]].take_damage(damage)
+                self.active_weapons.remove(action)
 
+            action["Delay"] -= 1
 
         # Kill players who died this turn
         for player in alive:
             if self.countries[player].health == 0:
+                source = self.countries[player].killer
                 self.countries[player].alive = False
+
                 self.events.append({
-                    "Death": None,
-                    "Source": player
+                    "Death": player,
+                    "Source": source
                 })
+
+                if self.countries[player].nukes:
+                    self.countries[source].nukes += self.countries[player].nukes
+                    self.countries[player].nukes = 0
+
+    def _process_actions(self, actions: List[dict]):
+        """
+        Updates self.active_weapons with weapons being fired
+        """
+
+        for action in actions:
+            self.events.append(action)
+            if not action:
+                raise Exception(action)
+
+            if "Weapon" in action and action["Weapon"] in weapons.Weapons:
+                delay = self.get_delay(action)
+                self.active_weapons.append({
+                    "Delay": ceil(delay),
+                    "Distance": delay,
+                    "Event": action
+                })
+
+    def get_delay(self, action: dict):
+        source, target = action["Source"], action["Target"]
+
+        difference = target - source
+        rotation = 2 * pi * difference / len(self.countries)
+
+        chord_length = action["Weapon"].value.SPEED * sin(rotation / 2)
+        return chord_length
+
+    def print_events(self):
+        def name(id):
+            return self.countries[id].name
+
+        print(self.active_weapons)
+        for event in self.events:
+            source = name(event["Source"])
+
+            if "Target" in event:
+                target = name(event["Target"])
+            else:
+                target = None
+
+            if "Death" in event:
+                print(name(event["Death"]), "died because of", source + "!")
+
+            elif "Weapon" not in event:
+                print(event)
+                if target:
+                    print(source, "decided to wait and stared at", target)
+                else:
+                    print(source, "decided to wait.")
+
+            else:
+                weapon_name = event["Weapon"].name.lower()
+                print(source, "fired a", weapon_name, "at", target)
+
+                if not event["Success"]:
+                    print("But they ran out of", weapon_name + "s.")
 
 
 def get_bots():
