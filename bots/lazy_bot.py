@@ -9,6 +9,7 @@ class Bot:
     """
 
     interval = 5
+
     def __init__(self):
         self.counter = self.interval
 
@@ -17,7 +18,6 @@ class Bot:
         self.counter -= randint(1, 3)
         if self.counter > 0:
             return {}
-
 
         self.counter = self.interval
         weapon = choice(list(Weapons))

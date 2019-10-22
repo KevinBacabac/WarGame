@@ -8,7 +8,6 @@ class Bot:
     A bot to fire anything at anyone but itself
     """
 
-
     def action(self, country_status: dict, world_state: dict):
         weapon_choices = list(Weapons)
         if not self.has_nukes(country_status):

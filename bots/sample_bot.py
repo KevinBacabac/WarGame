@@ -9,7 +9,6 @@ class Bot:
     Or nothing at no one..
     """
 
-
     def action(self, country_status: dict, world_state: dict):
         weapon = choice(list(Weapons))
 

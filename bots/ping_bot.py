@@ -17,7 +17,6 @@ class Bot:
         self.last_enemy = None
         self.last_weapon = None
 
-
     def action(self, country_status: dict, world_state: dict):
         # Did anyone fire at it
         self.review_events(world_state["events"], country_status["ID"])
@@ -34,12 +33,11 @@ class Bot:
         else:
             return {}
 
-
     def review_events(self, events: List[dict], self_id: int):
         for event in events:
             # Search for only events that fire at this bot
             if ("Weapon" in event
-                and event["Weapon"] in Weapons and event["Target"] == self_id):
+                    and event["Weapon"] in Weapons and event["Target"] == self_id):
                 self.last_enemy = event["Source"]
                 self.last_weapon = event["Weapon"]
                 break

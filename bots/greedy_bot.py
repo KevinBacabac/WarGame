@@ -9,7 +9,6 @@ class Bot:
     Unfortunately that may be itself.
     """
 
-
     def action(self, country_status: dict, world_state: dict):
         # Fire at...
         target = self.pick_target(world_state)
@@ -29,7 +28,7 @@ class Bot:
 
         nuke_count = {}
         for i in world_state["alive_players"]:
-            nuke_count[i] =  world_state["countries"][i]["Nukes"]
+            nuke_count[i] = world_state["countries"][i]["Nukes"]
 
         max_nuke = max([nuke_count[i] for i in nuke_count])
 
