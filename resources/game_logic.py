@@ -143,7 +143,6 @@ class GameLogic:
         def name(id):
             return self.countries[id].name
 
-        print(self.active_weapons)
         for event in self.events:
             source = name(event["Source"])
 
@@ -156,7 +155,6 @@ class GameLogic:
                 print(name(event["Death"]), "died because of", source + "!")
 
             elif "Weapon" not in event:
-                print(event)
                 if target:
                     print(source, "decided to wait and stared at", target)
                 else:
