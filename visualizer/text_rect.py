@@ -1,5 +1,5 @@
 class TextRect:
-    def __init__(self, font, text, foreColour):
+    def __init__(self, font, text: str, foreColour):
         self.font = font
 
         self.last_text = None

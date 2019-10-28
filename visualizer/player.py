@@ -1,4 +1,5 @@
 import pygame
+from typing import Tuple
 
 
 from visualizer.text_rect import TextRect
@@ -19,19 +20,19 @@ class Player:
 
     BORDER_COLOUR = pygame.Color(0, 0, 100)
 
-    def __init__(self, country, posx=0, posy=0):
+    def __init__(self, country, pos: Tuple[int, int]):
         self.country = country
         self.health = country.health
 
         self.border = pygame.Rect(0, 0, self.HEIGHT, self.WIDTH)
-        self.inner = pygame.Rect(0, 0, self.HEIGHT - 10, self.WIDTH - 10)
+        self.inner = self.border.inflate(-10, -10)
 
         display_name = self.country.name.replace("_", " ").title()
         self.name = TextRect(SANS_FONT, display_name, GREY)
         self.health_text = TextRect(SANS_FONT, str(self.health), RED)
         self.nuke_text = TextRect(SANS_FONT, str(self.country.nukes), GREEN)
 
-        self.set_pos(posx, posy)
+        self.set_pos(pos)
 
     def draw(self, window: pygame.Surface):
         window.fill(self.BORDER_COLOUR, self.border)
@@ -48,13 +49,13 @@ class Player:
             self.nuke_text.draw(window)
             self.health_text.draw(window)
 
-    def set_pos(self, posx, posy):
-        self.border.center = posx, posy
-        self.inner.center = posx, posy
+    def set_pos(self, pos):
+        self.border.center = pos
+        self.inner.center = pos
 
         self.name.rect.midbottom = self.border.midtop
         self.health_text.rect.midbottom = self.name.rect.midtop
-        self.nuke_text.rect.center = posx, posy
+        self.nuke_text.rect.center = pos
 
     def apply_weapon(self, e: AnimatedWeapon):
         self.take_damage(e.weapon.value.DAMAGE)

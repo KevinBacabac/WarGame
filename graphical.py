@@ -30,18 +30,19 @@ TITLE_FONT = pygame.font.Font("fonts/OpenSans-Regular.ttf", 24)
 
 
 class PyGame:
-    FPS = 30
+    FPS = 60
     WIDTH = 800
     HEIGHT = 600
     TURN_LENGTH = 3
 
-    def __init__(self, window):
+    def __init__(self, window: pygame.Surface):
         self.game = GameLogic()
         self.window = window
         self.clock = pygame.time.Clock()
         self.active_weapons = []
         self.explosions = []
         self.timer = time.time()
+        self.end_game = None
 
         self.countries = []
         country_count = len(self.game.countries)
@@ -53,7 +54,7 @@ class PyGame:
             perc = (math.cos(i * TAU / country_count) / 2 + 1/2)
             y = (0.1 + 0.8 * perc) * self.HEIGHT
 
-            self.countries.append(Player(c, x, y))
+            self.countries.append(Player(c, (x, y)))
 
     def start(self):
         running = True
@@ -87,7 +88,7 @@ class PyGame:
                     self.countries[e.event["Target"]].apply_weapon(e)
 
                     if e.weapon is weapons.Weapons.NUKE:
-                        self.explosions.append(Explosion(e.rect.center))
+                        self.explosions.append(Explosion(e.rect.center, frame=14))
                     elif e.weapon is weapons.Weapons.MISSILE:
                         self.explosions.append(Explosion(e.rect.center, frame=5))
 
@@ -100,12 +101,16 @@ class PyGame:
                     self.turn_surface = TITLE_FONT.render("Round " + str(self.game.turn),
                                                           True, GREY)
 
-                # Finish weapon animations
-                elif not self.active_weapons:
-                    break
+                elif not self.end_game and not self.active_weapons:
+                    self.end_game = time.time() + 1
 
             pygame.display.update()
             self.clock.tick(self.FPS)
+
+
+            if self.end_game and self.end_game < time.time():
+                break
+
 
         if self.game.get_alive_count() == 1:
             alive = self.game.get_alive_countries()[0]

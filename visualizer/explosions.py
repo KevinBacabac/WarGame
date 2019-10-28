@@ -1,6 +1,8 @@
 import os
 import pygame
 
+from typing import Tuple
+
 
 def load_explosions():
     explosions = []
@@ -22,13 +24,9 @@ def load_explosions():
 
 
 class Explosion:
-    def __init__(self, pos, frame=None):
+    def __init__(self, pos: Tuple[int, int], frame: int):
         self.pos = pos
-
-        if frame:
-            self.frame = frame
-        else:
-            self.frame = len(explosionImages) - 1
+        self.frame = frame
 
     def draw(self, window):
         explosion = explosionImages[self.frame]

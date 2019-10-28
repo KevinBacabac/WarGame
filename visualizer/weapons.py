@@ -1,6 +1,8 @@
 import pygame
 import random
 import time
+from typing import Dict, Tuple
+
 from resources import weapons
 
 
@@ -16,11 +18,12 @@ class AnimatedWeapon:
         weapons.Weapons.NUKE: RED
     }
 
-    def __init__(self, start, end, event, turn_length):
+    def __init__(self, start: Tuple[int, int], end: Tuple[int, int],
+                 event: Dict, turn_length: int):
         self.start, self.end = start, end
 
         self.rect = pygame.Rect(0, 0, 10, 10)
-        self.start_time = time.time() + turn_length * random.random()
+        self.start_time = time.time()
         self.event = event
         self.weapon = event["Weapon"]
         self.turn_length = turn_length
