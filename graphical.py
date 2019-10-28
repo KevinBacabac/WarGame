@@ -10,196 +10,23 @@ import time
 from resources import weapons
 from resources.game_logic import GameLogic
 
+pygame.init()
+window = pygame.display.set_mode((800, 600))
+
+from visualizer.explosions import Explosion
+from visualizer.player import Player
+from visualizer.weapons import AnimatedWeapon
+
 
 BLACK = pygame.Color(0, 0, 0)
 GREY = pygame.Color(120, 120, 120)
 
-RED = pygame.Color(255, 0, 0)
-YELLOW = pygame.Color(255, 255, 0)
-GREEN = pygame.Color(0, 255, 0)
-
 TAU = math.pi * 2
 
-
-pygame.init()
-window = pygame.display.set_mode((800, 600))
-
-imgLoad = pygame.image.load
-nuclearIcon = imgLoad("images/nuclear.png").convert_alpha()
+nuclearIcon = pygame.image.load("images/nuclear.png").convert_alpha()
 pygame.display.set_icon(nuclearIcon)
 
-SANS_FONT = pygame.font.Font("fonts/OpenSans-Regular.ttf", 14)
 TITLE_FONT = pygame.font.Font("fonts/OpenSans-Regular.ttf", 24)
-
-
-def load_explosions():
-    explosions = []
-    path = "images/explosions"
-
-    for i in range(1, 16):
-        file = str(i) + ".png"
-
-        file_path = os.path.join(path, file)
-        image = imgLoad(file_path).convert_alpha()
-        rect = image.get_rect()
-
-        explosions.append({
-            "Image": image,
-            "Rect": rect
-        })
-
-    return explosions
-
-
-explosionImages = load_explosions()
-
-
-class Explosion:
-    def __init__(self, pos, frame=None):
-        self.pos = pos
-
-        if frame:
-            self.frame = frame
-        else:
-            self.frame = len(explosionImages) - 1
-
-    def draw(self, window):
-        explosion = explosionImages[self.frame]
-        rect = explosion["Rect"]
-
-        x, y = self.pos
-        x -= rect.width / 2
-        y -= rect.height / 2
-
-        window.blit(explosion["Image"], (x, y))
-        self.frame -= 1
-
-
-class AnimatedWeapon:
-    COLORS = {
-        weapons.Weapons.LASER: YELLOW,
-        weapons.Weapons.MISSILE: GREEN,
-        weapons.Weapons.NUKE: RED
-    }
-
-    def __init__(self, start, end, event, turn_length):
-        self.start, self.end = start, end
-
-        self.rect = pygame.Rect(0, 0, 10, 10)
-        self.start_time = time.time() + turn_length * random.random()
-        self.event = event
-        self.weapon = event["Weapon"]
-        self.turn_length = turn_length
-        self.remove = False
-
-    def get_pos(self):
-        sx, sy = self.start
-        ex, ey = self.end
-
-        delta = (time.time() - self.start_time) / self.get_max_time()
-
-        x = sx + (ex - sx) * delta
-        y = sy + (ey - sy) * delta
-
-        self.rect.center = x, y
-
-    def draw(self, window):
-        if time.time() > self.start_time:
-            self.get_pos()
-            window.fill(self.COLORS[self.weapon], self.rect)
-
-        if time.time() - self.start_time > self.get_max_time():
-            self.remove = True
-
-    def get_max_time(self):
-        return (self.weapon.value.SPEED + 1) * self.turn_length
-
-
-class TextRect:
-    def __init__(self, font, text, foreColour):
-        self.font = font
-
-        self.last_text = None
-        self.text = text
-
-        self.foreColour = foreColour
-
-        self.rect = None
-        self.check_update()
-
-    def check_update(self):
-        if self.text != self.last_text:
-            #Antialias is True
-            self.surface = self.font.render(self.text, True, self.foreColour)
-            self.last_text = self.text
-            self.realignRect()
-
-    def draw(self, window):
-        self.check_update()
-        window.blit(self.surface, self.rect)
-
-    def realignRect(self):
-        if not self.rect:
-            self.rect = self.surface.get_rect()
-
-        old_center = self.rect.center
-
-        self.rect.size = self.surface.get_size()
-        self.rect.center = old_center
-
-
-class Player:
-    HEIGHT = 80
-    WIDTH = 80
-
-    BORDER_COLOUR = pygame.Color(0, 0, 100)
-
-    def __init__(self, country, posx=0, posy=0):
-        self.country = country
-        self.health = country.health
-
-        self.border = pygame.Rect(0, 0, self.HEIGHT, self.WIDTH)
-        self.inner = pygame.Rect(0, 0, self.HEIGHT - 10, self.WIDTH - 10)
-
-        display_name = self.country.name.replace("_", " ").title()
-        self.name = TextRect(SANS_FONT, display_name, GREY)
-        self.health_text = TextRect(SANS_FONT, str(self.health), RED)
-        self.nuke_text = TextRect(SANS_FONT, str(self.country.nukes), GREEN)
-
-        self.set_pos(posx, posy)
-
-    def draw(self, window: pygame.Surface):
-        window.fill(self.BORDER_COLOUR, self.border)
-        window.fill(BLACK, self.inner)
-
-        if self.health:
-            self.health_text.text = str(object=self.health)
-            self.health_text.check_update()
-
-            self.nuke_text.text = str(self.country.nukes)
-            self.nuke_text.check_update()
-
-            self.name.draw(window)
-            self.nuke_text.draw(window)
-            self.health_text.draw(window)
-
-    def set_pos(self, posx, posy):
-        self.border.center = posx, posy
-        self.inner.center = posx, posy
-
-        self.name.rect.midbottom = self.border.midtop
-        self.health_text.rect.midbottom = self.name.rect.midtop
-        self.nuke_text.rect.center = posx, posy
-
-    def apply_weapon(self, e: AnimatedWeapon):
-        self.take_damage(e.weapon.value.DAMAGE)
-
-    def take_damage(self, damage: int):
-        if self.health > 0:
-            self.health -= damage
-
-            if self.health <= 0:
-                self.health = 0
 
 
 class PyGame:
