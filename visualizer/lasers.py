@@ -5,6 +5,7 @@ from math import atan2, cos, sin, pi, sqrt
 from typing import Tuple
 
 
+from visualizer.collection import Collection
 from visualizer.timer import Timer
 
 
@@ -44,14 +45,8 @@ class Laser:
         pygame.draw.line(window, self.COLOUR, self.source, target_pos)
 
 
-class Lasers:
-    def __init__(self):
-        self.all = []
-
-    def add(self, start_pos: Tuple[int, int], end_pos: Tuple[int, int],
-            turn_length: float):
-
-        self.all.append(Laser(start_pos, end_pos, turn_length))
+class Lasers(Collection):
+    class_type = Laser
 
     def draw(self, window, FPS):
         for p in self.all[:]:

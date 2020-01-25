@@ -4,6 +4,7 @@ import random
 from math import sin, cos, pi
 from typing import Tuple
 
+from visualizer.collection import Collection
 
 TAU = 2 * pi
 
@@ -35,9 +36,8 @@ class Particle:
         self.despawn_count -= 1 / FPS
 
 
-class Particles:
-    def __init__(self):
-        self.all = []
+class Particles(Collection):
+    class_type = Particle
 
     def add(self, pos):
         for i in range(100):

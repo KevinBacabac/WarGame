@@ -4,6 +4,7 @@ import time
 from typing import Dict, Tuple
 
 from resources import weapons
+from visualizer.collection import Collection
 from visualizer.timer import Timer
 
 
@@ -74,13 +75,8 @@ class Trail:
                 del self.last_pos[0]
 
 
-class ActiveWeapons:
-    def __init__(self):
-        self.all = []
-
-    def add(self, start: Tuple[int, int], end: Tuple[int, int],
-            event: Dict, turn_length: float):
-        self.all.append(AnimatedWeapon(start, end, event, turn_length))
+class ActiveWeapons(Collection):
+    class_type = AnimatedWeapon
 
     def draw(self, window):
         for e in self.all[:]:

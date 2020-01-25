@@ -3,6 +3,8 @@ import pygame
 
 from typing import Tuple
 
+from visualizer.collection import Collection
+
 
 def load_explosions():
     explosions = []
@@ -40,12 +42,8 @@ class Explosion:
         self.frame -= 1
 
 
-class Explosions:
-    def __init__(self):
-        self.all = []
-
-    def add(self, pos, weapon):
-        self.all.append(Explosion(pos, weapon))
+class Explosions(Collection):
+    class_type = Explosion
 
     def draw(self, window):
         for e in self.all[:]:
