@@ -11,7 +11,7 @@ class Countries:
     def __init__(self, game_countries, SIZE):
         WIDTH, HEIGHT = SIZE
 
-        self.countries = []
+        self.all = []
         country_count = len(game_countries)
 
         for i, c in enumerate(game_countries):
@@ -21,20 +21,20 @@ class Countries:
             perc = (math.cos(i * TAU / country_count) / 2 + 1/2)
             y = (0.15 + 0.75 * perc) * HEIGHT
 
-            self.countries.append(Country(c, (x, y)))
+            self.all.append(Country(c, (x, y)))
 
     def draw(self, window):
         # Draw countries
-        for c in self.countries:
+        for c in self.all:
             c.draw(window)
 
     def get_pos(self, i):
-        return self.countries[i].border.center
+        return self.all[i].border.center
 
     def resize(self, WIDTH, HEIGHT):
-        country_count = len(self.countries)
+        country_count = len(self.all)
 
-        for i, c in enumerate(self.countries):
+        for i, c in enumerate(self.all):
             perc = (math.sin(i * TAU / country_count) / 2 + 1/2)
             x = (0.1 + 0.8 * perc) * WIDTH
 

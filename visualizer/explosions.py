@@ -42,16 +42,16 @@ class Explosion:
 
 class Explosions:
     def __init__(self):
-        self.explosions = []
+        self.all = []
 
     def add(self, pos, weapon):
-        self.explosions.append(Explosion(pos, weapon))
+        self.all.append(Explosion(pos, weapon))
 
     def draw(self, window):
-        for e in self.explosions[:]:
+        for e in self.all[:]:
             e.draw(window)
             if not e.frame:
-                self.explosions.remove(e)
+                self.all.remove(e)
 
 
 explosionImages = load_explosions()

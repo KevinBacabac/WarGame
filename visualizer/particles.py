@@ -37,14 +37,14 @@ class Particle:
 
 class Particles:
     def __init__(self):
-        self.particles = []
+        self.all = []
 
     def add(self, pos):
         for i in range(100):
-            self.particles.append(Particle(pos))
+            self.all.append(Particle(pos))
 
     def draw(self, window, FPS):
-        for p in self.particles[:]:
+        for p in self.all[:]:
             p.draw(window, FPS)
             if p.despawn_count <= 0:
-                self.particles.remove(p)
+                self.all.remove(p)

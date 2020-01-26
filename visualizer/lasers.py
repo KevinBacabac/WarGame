@@ -46,15 +46,15 @@ class Laser:
 
 class Lasers:
     def __init__(self):
-        self.lasers = []
+        self.all = []
 
     def add(self, start_pos: Tuple[int, int], end_pos: Tuple[int, int],
             turn_length: float):
 
-        self.lasers.append(Laser(start_pos, end_pos, turn_length))
+        self.all.append(Laser(start_pos, end_pos, turn_length))
 
     def draw(self, window, FPS):
-        for p in self.lasers[:]:
+        for p in self.all[:]:
             p.draw(window, FPS)
             if p.timer.is_done():
-                self.lasers.remove(p)
+                self.all.remove(p)

@@ -76,14 +76,14 @@ class Trail:
 
 class ActiveWeapons:
     def __init__(self):
-        self.weapons = []
+        self.all = []
 
     def add(self, start: Tuple[int, int], end: Tuple[int, int],
             event: Dict, turn_length: float):
-        self.weapons.append(AnimatedWeapon(start, end, event, turn_length))
+        self.all.append(AnimatedWeapon(start, end, event, turn_length))
 
     def draw(self, window):
-        for e in self.weapons[:]:
+        for e in self.all[:]:
             e.draw(window)
             if e.timer.is_done():
-                self.weapons.remove(e)
+                self.all.remove(e)
