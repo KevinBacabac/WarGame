@@ -3,6 +3,8 @@ from typing import Dict, Tuple
 
 
 class Timer:
+    __slots__ = ("start_time", "duration", "remove")
+
     def __init__(self, duration: int):
         self.start_time = time.time()
         self.duration = duration

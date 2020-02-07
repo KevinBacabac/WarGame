@@ -19,7 +19,7 @@ class Bot:
                     continue
                 if c["Health"] > currmax:
                    currmax = c["Health"]
-                   target = c["ID"] 
+                   target = c["ID"]
 
         ## Else, I use missile at random person
         else:
@@ -42,7 +42,8 @@ class Bot:
 
         return {
             "Weapon": weapon,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }
 
     @staticmethod

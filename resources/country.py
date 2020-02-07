@@ -34,19 +34,15 @@ class Country:
         country_status = self.serialize()
 
         try:
-            attack = self.player.action(country_status, mydeepcopy(world_state))
+            action = self.player.action(country_status, mydeepcopy(world_state))
 
-            if attack:
-                attack["Source"] = self.id
-                attack = self._do_action(attack)
+            if action and action["Type"] == "Attack" and "Weapon" in action:
+                action["Source"] = self.id
+                action = self._do_action(action)
 
-                action = {
-                    "Attack": attack
-                }
+                assert is_valid_action(action, world_state["countries"])
 
-                assert is_valid_action(action, world_state["alive_players"])
-
-            else:
+            else:  # Idle
                 action = {}
 
         except Exception:
@@ -63,14 +59,14 @@ class Country:
             return action
 
     def _do_action(self, action: Dict):
-        if "Weapon" in action:
-            if action["Weapon"] == Weapons.NUKE:
-                action["Success"] = self.nukes > 0
+        assert "Weapon" in action
+        if action["Weapon"] == Weapons.NUKE:
+            action["Success"] = self.nukes > 0
 
-                if action["Success"]:
-                    self.nukes -= 1
-            else:
-                action["Success"] = True
+            if action["Success"]:
+                self.nukes -= 1
+        else:
+            action["Success"] = True
 
         return action
 

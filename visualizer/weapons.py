@@ -9,6 +9,9 @@ from visualizer.timer import Timer
 
 
 class AnimatedWeapon:
+    __slots__ = ("start", "end", "rect", "event", "turn_length", "weapon",
+                 "timer", "trail")
+
     def __init__(self, start: Tuple[int, int], end: Tuple[int, int],
                  event: Dict, turn_length: int):
         self.start, self.end = start, end
@@ -16,7 +19,7 @@ class AnimatedWeapon:
         self.rect = pygame.Rect(0, 0, 10, 10)
         self.event = event
         self.turn_length = turn_length
-        self.weapon = event["Attack"]["Weapon"]
+        self.weapon = event["Weapon"]
 
         self.timer = Timer(self.get_max_time())
         self.trail = Trail(self._get_colour())

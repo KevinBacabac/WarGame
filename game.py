@@ -1,13 +1,13 @@
 #!/usr/bin/python3
 
-from resources.game_logic import GameLogic
+from resources.engine import Engine
 
 
 class TextGame:
     __slots__ = ('game',)
 
     def __init__(self):
-        self.game = GameLogic()
+        self.game = Engine()
 
     def start(self):
         while not self.game.is_finished():

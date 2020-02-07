@@ -18,7 +18,8 @@ class Bot:
 
         return {
             "Weapon": weapon,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }
 
     def pick_target(self, world_state: dict):

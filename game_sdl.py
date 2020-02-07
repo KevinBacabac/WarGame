@@ -7,7 +7,7 @@ import sdl2.ext
 import time
 
 from resources import weapons
-from resources.game_logic import GameLogic
+from resources.engine import Engine
 
 
 BLACK = sdl2.ext.Color(0, 0, 0)
@@ -57,7 +57,7 @@ class TextGame:
     HEIGHT = 600
 
     def __init__(self):
-        self.game = GameLogic()
+        self.game = Engine()
 
         sdl2.ext.init()
         self.window = sdl2.ext.Window("War Game",

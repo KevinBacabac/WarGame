@@ -7,19 +7,26 @@ from resources import helpers, weapons
 from resources.helpers import mydeepcopy
 
 
-class GameLogic:
-    MAX_TURNS = 200
-    __slots__ = ('countries', 'events', 'active_weapons', 'turn')
+class Engine:
+    MAX_TURNS = 150
+    __slots__ = ("countries", "events", "active_weapons", "turn")
 
     def __init__(self):
         self.countries = Countries()
-        self.events = []
         self.active_weapons = []
         self.turn = 1
+        self._reset_events()
+
+    def _reset_events(self):
+        self.events = {
+            "Death": [],
+            "Hit": [],
+            "Player": [],
+        }
 
     def do_turn(self):
         actions = self._get_actions()
-        self.events = []
+        self._reset_events()
         self._process_actions(actions)
         self._run_active()
         self.turn += 1
@@ -57,16 +64,14 @@ class GameLogic:
                 if action["Event"]["Success"]:
                     c = action["Event"]["Target"]
                     self.countries.countries[c].take_damage(action)
-                    self.events.append({
-                        "Hit": action["Event"]
-                    })
+                    self.events["Hit"].append(action["Event"])
 
                 self.active_weapons.remove(action)
 
             action["Delay"] -= 1
 
         # Kill players who died this turn
-        self.events += self.countries.check_deaths(alive)
+        self.events["Death"] += self.countries.check_deaths(alive)
 
     def _process_actions(self, actions: List[Dict]):
         """
@@ -74,20 +79,16 @@ class GameLogic:
         """
 
         for action in actions:
-            self.events.append(action)
             if not action:
-                raise Exception(action)
+                continue  # Idle
 
-            if "Attack" in action:
-                attack = action["Attack"]
-                if ("Weapon" in attack
-                    and attack["Weapon"] in weapons.Weapons
-                    and attack["Success"]):
-
-                    delay = self.get_delay(attack)
+            self.events["Player"].append(action)
+            if action["Type"] == "Attack":
+                if action["Success"]:
+                    delay = self.get_delay(action)
                     self.active_weapons.append({
                         "Delay": ceil(delay),
-                        "Event": attack
+                        "Event": action
                     })
 
     def get_delay(self, action: Dict):
@@ -104,18 +105,14 @@ class GameLogic:
 
         name = self.countries.get_name
 
-        for event in self.events:
-            if "Death" in event:
-                print(name(event["Death"]["Target"]), "died because of",
-                      name(event["Death"]["Source"]), "using a",
-                      f'{event["Death"]["Weapon"].name}!')
-                continue
+        for event in self.events["Death"]:
+            print(name(event["Target"]), "died because of",
+                  name(event["Source"]), "using a",
+                  f"{event['Weapon'].name}!")
 
-            elif "Hit" in event:
-                continue
-
-            elif "Attack" in event:
-                attack = event["Attack"]
+        for event in self.events["Player"]:
+            if event["Type"] == "Attack":
+                attack = event
                 source = name(attack["Source"])
 
                 if "Target" in attack:
@@ -123,11 +120,11 @@ class GameLogic:
                 else:
                     target = None
 
-                if "Weapon" in attack:
-                    weapon_name = attack["Weapon"].name
-                    print(source, "fired a", weapon_name, "at", target)
+                assert "Weapon" in attack
+                weapon_name = attack["Weapon"].name
+                print(source, "fired a", weapon_name, "at", target)
 
-                    if not attack["Success"]:
-                        print("But they ran out of", f"{weapon_name}s.")
+                if not attack["Success"]:
+                    print("But they ran out of", f"{weapon_name}s.")
 
         print()

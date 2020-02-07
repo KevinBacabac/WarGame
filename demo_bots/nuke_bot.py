@@ -1,5 +1,6 @@
 from resources.weapons import Weapons
 
+
 class Bot:
     def action(self, country_status: dict, world_state: dict):
         targets = world_state["alive_players"]
@@ -10,5 +11,6 @@ class Bot:
 
         return {
             "Weapon": Weapons.NUKE,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }

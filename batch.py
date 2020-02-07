@@ -3,7 +3,7 @@
 import multiprocessing
 from collections import Counter
 
-from resources.game_logic import GameLogic
+from resources.engine import Engine
 from resources.country import Country
 
 
@@ -14,7 +14,7 @@ class BatchGame:
     __slots__ = ('game',)
 
     def __init__(self):
-        self.game = GameLogic()
+        self.game = Engine()
 
     def start(self):
         while not self.game.is_finished():

@@ -1,4 +1,5 @@
-Implement a class with an action method which takes the same arguments as shown by sample_bot.py. You will take two arguments country_status and world_state. Return a dictionary (we call the Action) with the following keys.
+# Winter 2020
+Implement a class with an action method which takes the same arguments as shown by sample_bot.py. You will take two arguments country_status and world_state. Return a dictionary (we call the Action).
 
 country_status
 A dictionary containing the following keys
@@ -16,46 +17,39 @@ A dictionary containing the following keys
 world_state
 A dictionary containing the following keys
 {
-    "active_weapons": [An array of Active Weapon dictionaries]
-    "countries": [An array of country_status dictionaries]
-    "events": [An array of Event dictionaries]
+    "active_weapons": [A list of Active Weapon dictionaries]
+    "countries": [A list of country_status dictionaries]
+    "events": [Events dictionary]
     "alive_players": [A set of integers corresponding to country IDs]
 }
 
+Action (Idle)
+{}
 
-Action
-A dictionary containing the following keys. If there is no Weapon key then a bot will do nothing.
+Action (Attack)
 {
     "Target": [A country ID]
     "Weapon": [An element of the Weapon enum]
+    "Type": "Attack"
 }
 
 Player Action
-An Action dictionary with an additional key,
+An Action dictionary with additional keys.
 {
     "Source": [The ID of the country that performed the action]
-    "Success": [Did they fire their weapon successfully]
+    "Success": [Did they act successfully]
     ...
 }
 
-Attack Event
-An Event dictionary with an additional key,
+Events
 {
-    "Attack": [Player Action]
-}
-
-Death Event
-{
-    "Death": [Player Action]
-}
-
-Hit Event
-{
-    "Hit": [Player Action]
+    "Player": [List of Player Action which happened this turn]
+    "Death": [List of Player Action which killed a player this turn]
+    "Hit": [List of Player Action which hit a player this turn]
 }
 
 Active Weapon
 {
     "Delay": [An integer representing the delay until the weapon hits its target]
-    "Event": [Player Action]
+    "Event": [Player Action with Attack]
 }

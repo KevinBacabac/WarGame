@@ -27,18 +27,18 @@ class Bot:
 
             return {
                 "Weapon": action,
-                "Target": target
+                "Target": target,
+                "Type": "Attack",
             }
 
         return {}
 
-    def review_events(self, events: List[Dict], self_id: int):
-        for event in events:
+    def review_events(self, events: Dict, self_id: int):
+        for event in events["Player"]:
             # Search for only events that fire at this bot
-            if "Attack" in event:
-                attack = event["Attack"]
-                if ("Weapon" in attack
-                        and attack["Weapon"] in Weapons and attack["Target"] == self_id):
+            if event["Type"] == "Attack":
+                attack = event
+                if attack["Target"] == self_id:
                     self.last_enemy = attack["Source"]
                     self.last_weapon = attack["Weapon"]
                     break

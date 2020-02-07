@@ -1,4 +1,6 @@
 class TextRect:
+    __slots__ = ("font", "last_text", "text", "foreColour", "rect", "surface")
+
     def __init__(self, font, text: str, foreColour):
         self.font = font
 
@@ -15,13 +17,13 @@ class TextRect:
             # Antialias is True
             self.surface = self.font.render(self.text, True, self.foreColour)
             self.last_text = self.text
-            self.realignRect()
+            self.realign_rect()
 
     def draw(self, window):
         self.check_update()
         window.blit(self.surface, self.rect)
 
-    def realignRect(self):
+    def realign_rect(self):
         if not self.rect:
             self.rect = self.surface.get_rect()
 

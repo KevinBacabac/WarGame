@@ -15,11 +15,16 @@ def get_distance(countries: List, country_one: int, country_two: int):
     return chord_length
 
 
-def is_valid_action(action: Dict, alive_countries: List):
-    if "Attack" not in action:
+def list_countries(countries):
+    """ Returns indices """
+    return set([pos for pos, country in enumerate(countries)])
+
+
+def is_valid_action(action: Dict, countries: Dict):
+    if action and action["Type"] != "Attack":
         return False
 
-    attack = action["Attack"]
+    attack = action
 
     try:
         if "Weapon" not in attack:
@@ -27,12 +32,11 @@ def is_valid_action(action: Dict, alive_countries: List):
 
         return all((
             attack["Weapon"] in Weapons,
-            attack["Target"] in alive_countries
+            attack["Target"] in list_countries(countries),
         ))
     except KeyError as e:
         print("KeyError", e)
         return False
-
 
 def mydeepcopy(obj):
     # https://stackoverflow.com/a/19065623

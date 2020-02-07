@@ -11,24 +11,23 @@ class Bot:
 
         target_more_choices = []
 
-        
 
-     
-        
+
+
+
         for i in target_choices:
             if world_state["countries"][i]["Health"] <= 90:
                 target_more_choices.append(i)
-                
-                
 
-        
+
+
+
 
         weapon = choice([Weapons.MISSILE, Weapons.LASER])
         target = choice(target_more_choices)
 
         return {
             "Weapon": weapon,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }
-
-    

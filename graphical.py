@@ -7,7 +7,7 @@ import random
 import time
 
 
-from resources.game_logic import GameLogic
+from resources.engine import Engine
 from resources.country import Country
 from resources.weapons import Weapons
 
@@ -38,7 +38,7 @@ TITLE_FONT = pygame.font.Font("fonts/FROSTBITE-Narrow Bold.ttf", 24)
 class PyGame:
     BATCH = False
     FPS = 60
-    TURN_LENGTH = 1
+    TURN_LENGTH = 0.2
     frame = 0
 
     def __init__(self, window: pygame.Surface):
@@ -46,7 +46,7 @@ class PyGame:
         self.fullscreen = False
         self.window = window
 
-        self.game = GameLogic()
+        self.game = Engine()
         self.clock = pygame.time.Clock()
         self.active_weapons = ActiveWeapons()
         self.explosions = Explosions()
@@ -125,27 +125,26 @@ class PyGame:
             return self._finish_game()
 
     def animate_turn(self):
-        for event in self.game.events:
-            if "Attack" in event:
-                if event["Attack"]["Success"]:
-                    start = self.countries.get_pos(event["Attack"]["Source"])
-                    end_pos = self.countries.get_pos(event["Attack"]["Target"])
+        for event in self.game.events["Player"]:
+            if event["Type"] == "Attack" and event["Success"]:
+                start = self.countries.get_pos(event["Source"])
+                end_pos = self.countries.get_pos(event["Target"])
 
-                    if event["Attack"]["Weapon"] == Weapons.LASER:
-                        self.lasers.add(start, end_pos, self.TURN_LENGTH)
-                    else:
-                        self.active_weapons.add(start, end_pos, event, self.TURN_LENGTH)
+                if event["Weapon"] == Weapons.LASER:
+                    self.lasers.add(start, end_pos, self.TURN_LENGTH)
+                else:
+                    self.active_weapons.add(start, end_pos, event, self.TURN_LENGTH)
 
-            elif "Death" in event:
-                end_pos = self.countries.get_pos(event["Death"]["Target"])
-                self.particles.add(end_pos)
+        for event in self.game.events["Death"]:
+            end_pos = self.countries.get_pos(event["Target"])
+            self.particles.add(end_pos)
 
-            elif "Hit" in event:
-                if event["Hit"]["Weapon"] == Weapons.NUKE:
-                    self.shake.start(40)
+        for event in self.game.events["Hit"]:
+            if event["Weapon"] == Weapons.NUKE:
+                self.shake.start(40)
 
-                pos = self.countries.get_pos(event["Hit"]["Target"])
-                self.explosions.add(pos, event["Hit"]["Weapon"])
+            pos = self.countries.get_pos(event["Target"])
+            self.explosions.add(pos, event["Weapon"])
 
     def screenshot(self):
         path = os.path.join("screenshots", str(PyGame.frame) + '.png')

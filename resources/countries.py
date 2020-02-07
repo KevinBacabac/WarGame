@@ -29,7 +29,7 @@ class Countries:
             self.countries.append(current)
 
     def check_deaths(self, alive_players: List):
-        events = []
+        death_events = []
 
         # Kill players who died this turn
         for player in alive_players:
@@ -38,20 +38,17 @@ class Countries:
                 source = event["Source"]
                 self.countries[player].alive = False
 
-                events.append({
-                    "Death": event,
-                })
+                death_events.append(event)
 
                 self.countries[source].kills.append(player)
                 self.countries[source].nukes += 1
                 self.countries[source].nukes += self.countries[player].nukes
                 self.countries[player].nukes = 0
 
-        return events
+        return death_events
 
     def get_actions(self, world_state: Dict):
         actions = []
-        alive_countries = self.get_alive()
 
         for i, country in enumerate(self.countries):
             if not country.alive:
@@ -59,14 +56,19 @@ class Countries:
 
             action = country.get_action(world_state)
 
-            # Check if attack is valid
-            if helpers.is_valid_action(action, alive_countries):
-                actions.append(action)
+            # Prevent attacks on dead players so game has an end
+            if (action  # Not idle
+                    and action["Type"] == "Attack"
+                    and self.get_alive_count() < 2
+                    and action["Target"] not in self.get_alive()):
+                continue
+
+            actions.append(action)
 
         return actions
 
     def get_alive(self):
-        """ Returns indexes """
+        """ Returns indices """
         return set([pos for pos, country in enumerate(self.countries) if country.alive])
 
     def get_alive_count(self):

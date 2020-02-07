@@ -31,7 +31,8 @@ class Bot:
 
         return {
             "Weapon": weapon,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }
 
     def has_nukes(self, country_status: dict):

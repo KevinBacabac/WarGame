@@ -1,7 +1,9 @@
-from resources.weapons import Weapons
-from resources.helpers import mydeepcopy
 import os
 import random
+from typing import Dict
+
+from resources.weapons import Weapons
+from resources.helpers import mydeepcopy
 
 
 class Bot:
@@ -23,10 +25,13 @@ class Bot:
         os.rename(path, new_name)
     """
 
-    def action(self, country_status: dict, world_state: dict):
+    def action(self, country_status: Dict, world_state: Dict):
         # Fire at...
         has_nukes = self.has_nukes(country_status)
         target = self.pick_target(has_nukes, country_status["ID"], world_state)
+
+        if target is None:
+            return {}  # Idle
 
         # Select a weapon
         if has_nukes:
@@ -36,11 +41,12 @@ class Bot:
 
         return {
             "Weapon": weapon,
-            "Target": target
+            "Target": target,
+            "Type": "Attack",
         }
 
     @staticmethod
-    def get_healths(has_nukes: bool, own_id: int, world_state: dict):
+    def get_healths(has_nukes: bool, own_id: int, world_state: Dict):
         """
         Return a dictionary mapping country ids to their distance.
         """
@@ -54,11 +60,13 @@ class Bot:
             if c["ID"] == own_id:
                 continue
 
-            elif c["Filename"] == "ping_bot":
+            elif (c["Filename"] == "ping_bot"
+                    and len(future_state["future_alive"]) > 2):
+
                 if has_nukes and not c["Nukes"]:
                     healths[c["ID"]] = 10000  # Massive priority
                     break
-                elif len(future_state["future_alive"]) > 2:
+                else:
                     continue
 
             healths[c["ID"]] = c["Health"]
@@ -66,7 +74,7 @@ class Bot:
         return healths
 
     @staticmethod
-    def pick_target(has_nukes: bool, own_id: int, world_state: dict):
+    def pick_target(has_nukes: bool, own_id: int, world_state: Dict):
         """
         Return a country ID
         """
@@ -86,11 +94,11 @@ class Bot:
         return i
 
     @staticmethod
-    def has_nukes(country_status: dict):
+    def has_nukes(country_status: Dict):
         return country_status["Nukes"] > 0
 
     @staticmethod
-    def simulate(own_id: int, world_state: dict):
+    def simulate(own_id: int, world_state: Dict):
         """
         Simulate health of all bots after all weapons hit.
         """
@@ -104,7 +112,7 @@ class Bot:
 
         new_alive = set()
         for c in world_state["countries"]:
-            if c["Health"]:
+            if c["Health"] > 0:
                 new_alive.add(c["ID"])
 
         world_state["future_alive"] = new_alive
