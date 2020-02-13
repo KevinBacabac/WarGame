@@ -38,6 +38,7 @@ def is_valid_action(action: Dict, countries: Dict):
         print("KeyError", e)
         return False
 
+
 def mydeepcopy(obj):
     # https://stackoverflow.com/a/19065623
     try:

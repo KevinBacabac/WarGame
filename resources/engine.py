@@ -83,13 +83,12 @@ class Engine:
                 continue  # Idle
 
             self.events["Player"].append(action)
-            if action["Type"] == "Attack":
-                if action["Success"]:
-                    delay = self.get_delay(action)
-                    self.active_weapons.append({
-                        "Delay": ceil(delay),
-                        "Event": action
-                    })
+            if action["Type"] == "Attack" and action["Success"]:
+                delay = self.get_delay(action)
+                self.active_weapons.append({
+                    "Delay": ceil(delay),
+                    "Event": action
+                })
 
     def get_delay(self, action: Dict):
         source, target = action["Source"], action["Target"]
