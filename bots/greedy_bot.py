@@ -5,7 +5,7 @@ from resources.weapons import Weapons
 
 class Bot:
     """
-    An opportunist that tries to kill the weakest person with the most nukes,
+    An opportunist which tries to kill the person with the most nukes,
     Unfortunately that may be itself.
     """
 
@@ -22,7 +22,8 @@ class Bot:
             "Type": "Attack",
         }
 
-    def pick_target(self, world_state: dict):
+    @staticmethod
+    def pick_target(world_state: dict):
         """
         Return a country ID
         """

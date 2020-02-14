@@ -38,7 +38,7 @@ TITLE_FONT = pygame.font.Font("fonts/FROSTBITE-Narrow Bold.ttf", 24)
 class PyGame:
     BATCH = False
     FPS = 60
-    TURN_LENGTH = 3
+    TURN_LENGTH = 0.2
     frame = 0
 
     def __init__(self, window: pygame.Surface):

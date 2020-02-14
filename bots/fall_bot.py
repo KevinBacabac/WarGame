@@ -5,7 +5,7 @@ from resources.weapons import Weapons
 
 class Bot:
     """
-    Bot designed in class.
+    Group bot designed in Fall 2019.
     Fire a nuke at the adjacent bots.
     Otherwise if there are no adjacent bots fire anywhere else.
     """
@@ -46,5 +46,6 @@ class Bot:
 
         return {}
 
-    def has_nukes(self, country_status: dict):
+    @staticmethod
+    def has_nukes(country_status: dict):
         return country_status["Nukes"] > 0

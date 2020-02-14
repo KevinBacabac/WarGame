@@ -52,5 +52,6 @@ class Bot:
             "Type": "Attack"
         }
 
-    def has_nukes(self, country_status: dict):
+    @staticmethod
+    def has_nukes(country_status: dict):
         return country_status["Nukes"] > 0
