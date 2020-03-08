@@ -26,5 +26,8 @@ Lesson # | Date | Description | Concepts
 
 ## Lessons
 [Lesson 1](https://docs.google.com/presentation/d/1hMb_UZWHC0SrRTNk4hAMShrTrMN3GhGXODitZLX0Mu0/edit?usp=sharing)
+[Lesson 2](https://docs.google.com/presentation/d/1-Q-WvVIlUf820kJjYzvpSQdd1Muoa7h7BiK8jwsXP9U/edit?usp=sharing)
+[Lesson 3](https://docs.google.com/presentation/d/1CslDZL3zKSSPdAtuBK5iUMjb-nK2OC1ePPM_Rw2MWgw/edit?usp=sharing)
+[Lesson 4](https://docs.google.com/presentation/d/1eMIE0a4weWAomdNxL5m2OTbsJvZnM9ipPbpzZFquS8o/edit?usp=sharing)
 
 Feel free to check F19/Projects/WarGame readme for extra material.
