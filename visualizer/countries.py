@@ -25,8 +25,12 @@ class Countries:
 
     def draw(self, window):
         # Draw countries
+        dirty_rects = []
+
         for c in self.all:
-            c.draw(window)
+            dirty_rects += c.draw(window)
+
+        return dirty_rects
 
     def get_pos(self, i):
         return self.all[i].border.center

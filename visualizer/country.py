@@ -27,6 +27,7 @@ class Country:
     def __init__(self, country, pos: Tuple[int, int]):
         self.country = country
 
+        self.colour = None
         self.border = pygame.Rect(0, 0, self.SIZE, self.SIZE)
         self.inner = self.border.inflate(-6, -6)
 
@@ -37,13 +38,24 @@ class Country:
 
         self.set_pos(pos)
 
-    def draw(self, window: pygame.Surface):
+    def check_death(self):
         if self.country.health:
             colour = self.BORDER_COLOUR
         else:
             colour = self.FADED_COLOUR
 
-        window.fill(colour, self.border)
+        if self.colour is None or colour != self.colour:
+            self.colour = colour
+
+            return [self.border, self.name.rect,
+                    self.kill_text.rect, self.health_text.rect]
+
+        return []
+
+    def draw(self, window: pygame.Surface):
+        dirty_rects = self.check_death()
+
+        window.fill(self.colour, self.border)
         window.fill(BLACK, self.inner)
 
         if self.country.health:
@@ -53,9 +65,9 @@ class Country:
             self.kill_text.text = str(len(self.country.kills))
             self.kill_text.check_update()
 
-            self.name.draw(window)
-            self.kill_text.draw(window)
-            self.health_text.draw(window)
+            dirty_rects += self.name.draw(window)
+            dirty_rects += self.kill_text.draw(window)
+            dirty_rects += self.health_text.draw(window)
 
             # Draw nuke images
             pos = nuke_rect.copy()
@@ -63,6 +75,8 @@ class Country:
             for i in range(self.country.nukes):
                 window.blit(nuke_image, pos)
                 pos.x += pos.width
+
+        return dirty_rects
 
     def set_pos(self, pos: Tuple[int, int]):
         self.border.center = pos

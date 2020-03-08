@@ -28,12 +28,19 @@ class Particle:
         self.colour = pygame.Color(r, g, b)
 
     def draw(self, window, FPS):
+        dirty_rects = []
+
+        dirty_rects.append(self.rect.copy())
+        dirty_rects.append(self.rect)
+
         self.x += self.dx
         self.y += self.dy
         self.rect.center = self.x, self.y
 
         window.fill(self.colour, self.rect)
         self.despawn_count -= 1 / FPS
+
+        return dirty_rects
 
 
 class Particles(Collection):
@@ -44,7 +51,12 @@ class Particles(Collection):
             self.all.append(Particle(pos))
 
     def draw(self, window, FPS):
+        dirty_rects = []
+
         for p in self.all[:]:
-            p.draw(window, FPS)
+            dirty_rects += p.draw(window, FPS)
             if p.despawn_count <= 0:
+                dirty_rects.append(p.rect)
                 self.all.remove(p)
+
+        return dirty_rects

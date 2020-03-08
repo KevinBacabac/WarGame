@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from copy import deepcopy
 import sys
 import os
 import pygame
@@ -11,6 +12,10 @@ from resources.engine import Engine
 from resources.country import Country
 from resources.weapons import Weapons
 
+try:
+    from visualizer.optimize_dirty_rects import optimize_dirty_rects
+except ImportError:
+    optimize_dirty_rects = None
 
 pygame.init()
 DEFAULT_FLAG = pygame.DOUBLEBUF | pygame.HWSURFACE | pygame.RESIZABLE
@@ -23,6 +28,7 @@ from visualizer.explosions import Explosions
 from visualizer.lasers import Lasers
 from visualizer.particles import Particles
 from visualizer.shake import Shake
+from visualizer.text_rect import TextRect
 
 
 BLACK = pygame.Color(0, 0, 0)
@@ -55,14 +61,20 @@ class PyGame:
         self.shake = Shake()
         self.timer = time.time()
 
+        self.show_explosions = True
+        self.shake_enabled = True
+        self.dirty_rect_enabled = False
+
+        self.old_dirty_rects = []
+
         self.countries = Countries(self.game.countries.countries, SIZE)
 
     def start(self):
         global SIZE
 
         running = True
-        self.turn_surface = TITLE_FONT.render("ROUND " + str(self.game.turn),
-                                              True, GUI_COLOUR)
+        self.turn_label = TextRect(TITLE_FONT, f"Round {self.game.turn}", GUI_COLOUR)
+        self.turn_label.rect.topleft = (10, 10)
 
         while running:
             for event in pygame.event.get():
@@ -80,22 +92,28 @@ class PyGame:
                     self.countries.resize(*event.size)
 
             # Refresh screen
-            self.window.fill(BLACK)
-            self.explosions.draw(self.window)
-            self.window.blit(self.turn_surface, (10, 10))
+            self.dirty_rects = []
+            self.refresh_screen = False
 
-            self.countries.draw(self.window)
+            self.window.fill(BLACK)
+
+            if self.show_explosions and not self.dirty_rect_enabled:
+                self.dirty_rects += self.explosions.draw(self.window)
+
+            self.dirty_rects += self.turn_label.draw(self.window)
+            self.dirty_rects += self.countries.draw(self.window)
             self.lasers.draw(self.window, self.FPS)
-            self.particles.draw(self.window, self.FPS)
-            self.active_weapons.draw(self.window)
+            self.dirty_rects += self.active_weapons.draw(self.window)
+
+            if not self.dirty_rect_enabled:
+                self.particles.draw(self.window, self.FPS)
 
             if time.time() - self.timer > self.TURN_LENGTH * self.game.turn:
                 if not self.game.is_finished():
                     self.game.do_turn()
                     self.game.print_events()
                     self.animate_turn()
-                    self.turn_surface = TITLE_FONT.render(f"Round {self.game.turn}",
-                                                          True, GUI_COLOUR)
+                    self.turn_label.text = f"Round {self.game.turn}"
 
                 elif not self.end_game:
                     self.end_game = time.time()
@@ -103,10 +121,20 @@ class PyGame:
                     if self.BATCH:
                         self.end_game += 3
 
-            if self.shake.is_active():
-                self.shake.animate(self.window)
+            if (not self.dirty_rect_enabled
+                and self.shake_enabled
+                and self.shake.is_active()):
 
-            pygame.display.update()
+                self.shake.animate(self.window)
+                self.refresh_screen = True
+
+            if not self.dirty_rect_enabled or self.refresh_screen:
+                pygame.display.update()
+            else:
+                temp = optimize_dirty_rects(deepcopy(self.dirty_rects + self.old_dirty_rects))
+                pygame.display.update(temp)
+
+            self.old_dirty_rects = self.dirty_rects
             self.clock.tick(self.FPS)
 
             if self.end_game and self.end_game < time.time():

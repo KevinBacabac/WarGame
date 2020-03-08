@@ -36,10 +36,17 @@ class AnimatedWeapon:
         self.rect.center = x, y
 
     def draw(self, window):
+        dirty_rects = []
+
         if time.time() > self.timer.start_time:
+            dirty_rects.append(self.rect.copy())
+            dirty_rects.append(self.rect)
+
             self.get_pos()
             window.fill(self._get_colour(), self.rect)
-            self.trail.draw(window, self.rect.center)
+            dirty_rects += self.trail.draw(window, self.rect.center)
+
+        return dirty_rects
 
     def get_max_time(self):
         return self.weapon.value.SPEED * self.turn_length
@@ -61,28 +68,49 @@ class Trail:
         self.counter = time.time()
 
     def draw(self, window, new_pos: Tuple[int, int]):
-        self._update(new_pos)
+        dirty_rects = self._update(new_pos)
 
         # Draw trail
         if len(self.last_pos) > 1:
             for point in self.last_pos:
                 pygame.draw.circle(window, self.colour, point, 2)
+                dirty_rects.append(self._get_rect(point))
+
+        return dirty_rects
 
     def _update(self, new_pos: Tuple[int, int]):
+        dirty_rects = []
+
         now = time.time()
         if self.counter <= now:
             self.counter += self.INTERVAL
             self.last_pos.append(new_pos)
 
             while len(self.last_pos) > self.COUNT:
+                dirty_rects.append(self._get_rect(self.last_pos[0]))
                 del self.last_pos[0]
+
+        return dirty_rects
+
+    @staticmethod
+    def _get_rect(pos):
+        x, y = pos
+        x -= 2
+        y -= 2
+
+        return pygame.Rect(x, y, 5, 5)
 
 
 class ActiveWeapons(Collection):
     class_type = AnimatedWeapon
 
     def draw(self, window):
+        dirty_rects = []
+
         for e in self.all[:]:
-            e.draw(window)
+            dirty_rects += e.draw(window)
             if e.timer.is_done():
+                dirty_rects.append(e.rect)
                 self.all.remove(e)
+
+        return dirty_rects

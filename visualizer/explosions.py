@@ -31,6 +31,8 @@ class Explosion:
         self.frame = weapon.value.EXPLOSION_SIZE
 
     def draw(self, window):
+        dirty_rects = []
+
         explosion = explosionImages[self.frame]
         rect = explosion["Rect"]
 
@@ -38,18 +40,25 @@ class Explosion:
         x -= rect.width / 2
         y -= rect.height / 2
 
-        window.blit(explosion["Image"], (x, y))
+        rect = window.blit(explosion["Image"], (x, y))
         self.frame -= 1
+
+        dirty_rects.append(rect)
+        return dirty_rects
 
 
 class Explosions(Collection):
     class_type = Explosion
 
     def draw(self, window):
+        dirty_rects = []
+
         for e in self.all[:]:
-            e.draw(window)
+            dirty_rects += e.draw(window)
             if not e.frame:
                 self.all.remove(e)
+
+        return dirty_rects
 
 
 explosionImages = load_explosions()
